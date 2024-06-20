@@ -2,6 +2,7 @@ import {useLocation, useRouteLoaderData} from '@remix-run/react';
 import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
 import type {FulfillmentStatus} from '@shopify/hydrogen/customer-account-api-types';
 import typographicBase from 'typographic-base';
+import {LoaderFunctionArgs, type AppLoadContext} from '@shopify/remix-oxygen';
 
 import type {
   ChildMenuItemFragment,
@@ -217,39 +218,75 @@ export function parseMenu(
 /**
  * Get each Formik environment key from the context
  */
-export async function getFormikKeys(env: Env) {
-  const data = {
+export async function getFormikKeys(
+  env: Env,
+): Promise<{SERVICE_ID: string; TEMPLATE_ID: string; PUBLIC_KEY: string}> {
+  if (
+    !env.PUBLIC_EMAILJS_SERVICE_ID ||
+    !env.PUBLIC_EMAILJS_TEMPLATE_ID ||
+    !env.PUBLIC_EMAILJS_PUBLIC_KEY
+  ) {
+    throw new Error('Missing emailjs service id or template id or public key');
+  }
+  return {
     SERVICE_ID: env.PUBLIC_EMAILJS_SERVICE_ID,
     TEMPLATE_ID: env.PUBLIC_EMAILJS_TEMPLATE_ID,
     PUBLIC_KEY: env.PUBLIC_EMAILJS_PUBLIC_KEY,
   };
-  return data;
 }
 
 export const INPUT_STYLE_CLASSES =
-  'appearance-none rounded dark:bg-transparent border focus:border-contrast/50 focus:ring-0 w-full py-2 px-3 text-secondary/90 placeholder:text-secondary/50 leading-tight focus:shadow-outline';
+  'appearance-none rounded dark:bg-transparent border focus:border-white/90 focus:ring-0 w-full py-2 px-3 text-secondary/90 placeholder:text-white/70 leading-tight focus:shadow-outline';
 
 export const getInputStyleClasses = (isError?: string | null) => {
   return `${INPUT_STYLE_CLASSES} ${
     isError
       ? 'border-red-500 pointer-events-auto'
-      : 'border-contrast/20 pointer-events-auto'
+      : 'border-white/60 pointer-events-auto'
   }`;
 };
 
-export function statusMessage(status: FulfillmentStatus) {
-  const translations: Record<FulfillmentStatus, string> = {
-    SUCCESS: 'Success',
-    PENDING: 'Pending',
-    OPEN: 'Open',
+export function statusMessage(status: string) {
+  const translations: Record<string, string> = {
+    ATTEMPTED_DELIVERY: 'Attempted delivery',
+    CANCELED: 'Canceled',
+    CONFIRMED: 'Confirmed',
+    DELIVERED: 'Delivered',
     FAILURE: 'Failure',
-    ERROR: 'Error',
-    CANCELLED: 'Cancelled',
+    FULFILLED: 'Fulfilled',
+    IN_PROGRESS: 'In Progress',
+    IN_TRANSIT: 'In transit',
+    LABEL_PRINTED: 'Label printed',
+    LABEL_PURCHASED: 'Label purchased',
+    LABEL_VOIDED: 'Label voided',
+    MARKED_AS_FULFILLED: 'Marked as fulfilled',
+    NOT_DELIVERED: 'Not delivered',
+    ON_HOLD: 'On Hold',
+    OPEN: 'Open',
+    OUT_FOR_DELIVERY: 'Out for delivery',
+    PARTIALLY_FULFILLED: 'Partially Fulfilled',
+    PENDING_FULFILLMENT: 'Pending',
+    PICKED_UP: 'Displayed as Picked up',
+    READY_FOR_PICKUP: 'Ready for pickup',
+    RESTOCKED: 'Restocked',
+    SCHEDULED: 'Scheduled',
+    SUBMITTED: 'Submitted',
+    UNFULFILLED: 'Unfulfilled',
   };
   try {
     return translations?.[status];
   } catch (error) {
     return status;
+  }
+}
+
+/**
+ * Errors can exist in an errors object, or nested in a data field.
+ */
+export function assertApiErrors(data: Record<string, any> | null | undefined) {
+  const errorMessage = data?.customerUserErrors?.[0]?.message;
+  if (errorMessage) {
+    throw new Error(errorMessage);
   }
 }
 

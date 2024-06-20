@@ -3,10 +3,9 @@ import {
   type MetaArgs,
   type LoaderFunctionArgs,
 } from '@shopify/remix-oxygen';
-import {useLoaderData} from '@remix-run/react';
 import {getSeoMeta} from '@shopify/hydrogen';
 
-import {MEDIA_FRAGMENT, PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
+import {MEDIA_FRAGMENT} from '~/data/fragments';
 import {seoPayload} from '~/lib/seo.server';
 import {routeHeaders} from '~/data/cache';
 

@@ -90,7 +90,7 @@ export default function CartRoute() {
   // @todo: finish on a separate PR
   return (
     <>
-      <div className="grid w-full gap-8 p-6 py-8 md:p-8 lg:p-12 justify-items-start">
+      <div className="grid w-full gap-8 p-6 md:p-8 justify-items-start pointer-events-auto">
         <Await resolve={rootData?.cart}>
           {(cart) => <Cart layout="page" cart={cart} />}
         </Await>

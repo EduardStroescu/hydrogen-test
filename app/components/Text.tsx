@@ -14,7 +14,7 @@ export function Text({
 }: {
   as?: React.ElementType;
   className?: string;
-  color?: 'default' | 'primary' | 'subtle' | 'notice' | 'contrast';
+  color?: 'default' | 'primary' | 'subtle' | 'notice' | 'contrast' | 'cart';
   format?: boolean;
   size?: 'lead' | 'copy' | 'fine';
   width?: 'default' | 'narrow' | 'wide';
@@ -27,6 +27,7 @@ export function Text({
     subtle: 'text-primary/50',
     notice: 'text-notice',
     contrast: 'text-contrast/90',
+    cart: 'text-black',
   };
 
   const sizes: Record<string, string> = {
@@ -114,14 +115,15 @@ export function Section({
   divider?: 'none' | 'top' | 'bottom' | 'both';
   display?: 'grid' | 'flex';
   heading?: string;
-  padding?: 'x' | 'y' | 'swimlane' | 'all';
+  padding?: 'x' | 'y' | 'swimlane' | 'all' | 'none';
   [key: string]: any;
 }) {
   const paddings = {
     x: 'px-6 md:px-8 lg:px-12',
     y: 'py-6 md:py-8 lg:py-12',
     swimlane: 'pt-4 md:pt-8 lg:pt-12 md:pb-4 lg:pb-8',
-    all: 'p-6 md:p-8 lg:p-12',
+    all: 'p-6 md:p-8 lg:p-4',
+    none: '',
   };
 
   const dividers = {
@@ -166,15 +168,16 @@ export function PageHeader({
   children?: React.ReactNode;
   className?: string;
   heading?: string;
-  variant?: 'default' | 'blogPost' | 'allCollections';
+  variant?: 'default' | 'account' | 'allCollections';
   [key: string]: any;
 }) {
-  const variants: Record<string, string> = {
-    default: 'grid w-full gap-8 p-6 py-8 md:p-8 lg:p-12 justify-items-start',
-    blogPost:
-      'grid md:text-center w-full gap-4 p-6 py-8 md:p-8 lg:p-12 md:justify-items-center',
+  const variants = {
+    default:
+      'grid w-full gap-8 p-6 py-2 md:p-8 md:py-0 lg:py-4 lg:px-12 justify-items-start pointer-events-auto',
     allCollections:
-      'flex justify-between items-baseline gap-8 p-6 md:p-8 lg:p-12',
+      'flex justify-between items-baseline gap-8 p-6 md:p-8 lg:p-12 pointer-events-auto',
+    account:
+      'flex w-full gap-8 p-6 py-2 md:p-8 md:py-0 lg:py-4 lg:px-12 justify-between items-center pointer-events-auto',
   };
 
   const styles = clsx(variants[variant], className);

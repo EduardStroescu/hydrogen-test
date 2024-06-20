@@ -3,6 +3,7 @@ import useWindowScroll from 'react-use/esm/useWindowScroll';
 import {Disclosure} from '@headlessui/react';
 import {Suspense, useEffect, useMemo} from 'react';
 import {CartForm} from '@shopify/hydrogen';
+import {Canvas} from '@react-three/fiber';
 
 import {type LayoutQuery} from 'storefrontapi.generated';
 import {Text, Heading, Section} from '~/components/Text';
@@ -11,7 +12,10 @@ import {Cart} from '~/components/Cart';
 import {CartLoading} from '~/components/CartLoading';
 import {Input} from '~/components/Input';
 import {Drawer, useDrawer} from '~/components/Drawer';
-import {CountrySelector} from '~/components/CountrySelector';
+import {
+  CountrySelectorBig,
+  CountrySelectorSmall,
+} from '~/components/CountrySelector';
 import {
   IconMenu,
   IconCaret,
@@ -29,6 +33,10 @@ import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 import type {RootLoader} from '~/root';
 
+import {ScrollProvider} from './ScrollProvider';
+import {CanvasContent} from './CanvasContent';
+import {Copywrite} from './Copywrite';
+
 type LayoutProps = {
   children: React.ReactNode;
   layout?: LayoutQuery & {
@@ -37,25 +45,61 @@ type LayoutProps = {
   };
 };
 
+export function Loading() {
+  return (
+    <div className="w-full h-full flex  flex-col justify-center items-center">
+      <p className="text-[4rem]">Loading...</p>
+    </div>
+  );
+}
+
 export function PageLayout({children, layout}: LayoutProps) {
   const {headerMenu, footerMenu} = layout || {};
   return (
     <>
-      <div className="flex flex-col min-h-screen">
-        <div className="">
+      <CanvasContainer />
+      {headerMenu && layout?.shop.name && (
+        <Header title={layout.shop.name} menu={headerMenu} />
+      )}
+      <div className="flex flex-col pointer-events-none">
+        <div>
           <a href="#mainContent" className="sr-only">
             Skip to content
           </a>
         </div>
-        {headerMenu && layout?.shop.name && (
-          <Header title={layout.shop.name} menu={headerMenu} />
-        )}
         <main role="main" id="mainContent" className="flex-grow">
           {children}
         </main>
       </div>
-      {footerMenu && <Footer menu={footerMenu} />}
+      {/* {footerMenu && <Footer menu={footerMenu} />} */}
     </>
+  );
+}
+
+function CanvasContainer() {
+  const isHome = useIsHomePath();
+
+  return (
+    <div className="canvas w-full h-full absolute z-[-2]">
+      <ScrollProvider>
+        <Suspense fallback={null}>
+          <Canvas
+            linear
+            flat
+            dpr={[1, 1]}
+            gl={{
+              alpha: true,
+              antialias: true,
+              stencil: false,
+              powerPreference: 'high-performance',
+            }}
+          >
+            <CanvasContent />
+          </Canvas>
+        </Suspense>
+        {isHome && <Copywrite />}
+      </ScrollProvider>
+    </div>
   );
 }
 
@@ -147,7 +191,7 @@ function MenuMobileNav({
   onClose: () => void;
 }) {
   return (
-    <nav className="grid gap-4 p-6 sm:gap-6 sm:px-12 sm:py-8">
+    <nav className="w-full grid gap-4 py-8 px-6 sm:gap-6 sm:px-8 text-contrast font-bold">
       {/* Top level menu items */}
       {(menu?.items || []).map((item) => (
         <span key={item.id} className="block">
@@ -189,8 +233,8 @@ function MobileHeader({
       role="banner"
       className={`${
         isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
+          ? ' text-contrast dark:text-primary shadow-darkHeader'
+          : ' text-primary'
       } flex lg:hidden items-center h-nav sticky backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-4 px-4 md:px-8`}
     >
       <div className="flex items-center justify-start w-full gap-4">
@@ -263,17 +307,17 @@ function DesktopHeader({
       role="banner"
       className={`${
         isHome
-          ? 'bg-primary/80 dark:bg-contrast/60 text-contrast dark:text-primary shadow-darkHeader'
-          : 'bg-contrast/80 text-primary'
+          ? 'text-contrast dark:text-primary shadow-darkHeader'
+          : ' text-primary'
       } ${
-        !isHome && y > 50 && ' shadow-lightHeader'
-      } hidden h-nav lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-40 top-0 justify-between w-full leading-none gap-8 px-12 py-8`}
+        !isHome && y > 50 ? 'shadow-lightHeader' : ''
+      } hidden h-16 lg:flex items-center sticky transition duration-300 backdrop-blur-lg z-[9999] top-0 justify-between w-full leading-none gap-7 px-10 py-8`}
     >
-      <div className="flex gap-12">
+      <div className="flex gap-7">
         <Link className="font-bold" to="/" prefetch="intent">
           {title}
         </Link>
-        <nav className="flex gap-8">
+        <nav className="flex gap-7">
           {/* Top level menu items */}
           {(menu?.items || []).map((item) => (
             <Link
@@ -282,7 +326,9 @@ function DesktopHeader({
               target={item.target}
               prefetch="intent"
               className={({isActive}) =>
-                isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+                isActive
+                  ? 'pb-1 border-b -mb-px text-white'
+                  : 'pb-1 text-gray-400 hover:text-white'
               }
             >
               {item.title}
@@ -290,7 +336,7 @@ function DesktopHeader({
           ))}
         </nav>
       </div>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-7 pr-7">
         <Form
           method="get"
           action={params.locale ? `/${params.locale}/search` : '/search'}
@@ -316,6 +362,7 @@ function DesktopHeader({
         </Form>
         <AccountLink className="relative flex items-center justify-center w-8 h-8 focus:ring-primary/5" />
         <CartCount isHome={isHome} openCart={openCart} />
+        <CountrySelectorSmall borderColor={'default'} />
       </div>
     </header>
   );
@@ -417,20 +464,14 @@ function Footer({menu}: {menu?: EnhancedMenu}) {
 
   return (
     <Section
-      divider={isHome ? 'none' : 'top'}
+      divider={'top'}
       as="footer"
       role="contentinfo"
-      className={`grid min-h-[25rem] items-start grid-flow-row w-full gap-6 py-8 px-6 md:px-8 lg:px-12 md:gap-8 lg:gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsCount}
-        bg-primary dark:bg-contrast dark:text-primary text-contrast overflow-hidden`}
+      className={`grid min-h-[15rem] items-start grid-flow-row w-full gap-6 py-8 px-6 md:px-8 lg:px-12 md:gap-8 lg:gap-12 grid-cols-1 md:grid-cols-2 lg:grid-cols-${itemsCount}
+       dark:text-primary text-contrast overflow-hidden pointer-events-none`}
     >
       <FooterMenu menu={menu} />
-      <CountrySelector />
-      <div
-        className={`self-end pt-8 opacity-50 md:col-span-2 lg:col-span-${itemsCount}`}
-      >
-        &copy; {new Date().getFullYear()} / Shopify, Inc. Hydrogen is an MIT
-        Licensed Open Source project.
-      </div>
+      <CountrySelectorBig />
     </Section>
   );
 }

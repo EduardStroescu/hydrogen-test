@@ -158,26 +158,29 @@ function redirectToFirstVariant({
 
 export default function Product() {
   const {product, shop, recommended, variants} = useLoaderData<typeof loader>();
-  const {media, title, vendor, descriptionHtml} = product;
+  const {title, descriptionHtml} = product;
   const {shippingPolicy, refundPolicy} = shop;
 
   return (
     <>
-      <Section className="px-0 md:px-8 lg:px-12">
+      <Section className="px-4 md:px-8 lg:px-12 pointer-events-auto overflow-scroll">
         <div className="grid items-start md:gap-6 lg:gap-20 md:grid-cols-2 lg:grid-cols-3">
           <ProductGallery
-            media={media.nodes}
+            product={product}
+            buttonLeftStyle={
+              'w-[1.5rem] sm:w-[2rem] md:w-[2.5rem] bg-black/60 backdrop-blur rounded'
+            }
+            buttonRightStyle={
+              'w-[1.5rem] sm:w-[2rem] md:w-[2.5rem] bg-black/60 backdrop-blur rounded'
+            }
             className="w-full lg:col-span-2"
           />
           <div className="sticky md:-mb-nav md:top-nav md:-translate-y-nav md:h-screen md:pt-nav hiddenScroll md:overflow-y-scroll">
-            <section className="flex flex-col w-full max-w-xl gap-8 p-6 md:mx-auto md:max-w-sm md:px-0">
+            <section className="backdrop-blur-lg bg-black/40 rounded flex flex-col w-full gap-8 p-6 md:mx-auto md:max-w-sm">
               <div className="grid gap-2">
                 <Heading as="h1" className="whitespace-normal">
                   {title}
                 </Heading>
-                {vendor && (
-                  <Text className={'opacity-50 font-medium'}>{vendor}</Text>
-                )}
               </div>
               <Suspense fallback={<ProductForm variants={[]} />}>
                 <Await
@@ -191,7 +194,7 @@ export default function Product() {
                   )}
                 </Await>
               </Suspense>
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-4">
                 {descriptionHtml && (
                   <ProductDetail
                     title="Product Details"
@@ -223,7 +226,15 @@ export default function Product() {
           resolve={recommended}
         >
           {(products) => (
-            <ProductSwimlane title="Related Products" products={products} />
+            <div className="relative">
+              <ProductSwimlane
+                title="Related Products"
+                products={products}
+                buttonLeftStyle="w-[2.5rem] md:w-[3rem]"
+                buttonRightStyle="w-[2.5rem] md:w-[3rem]"
+                className="lg:-left-[5px] px-1 lg:px-6 -translate-y-8"
+              />
+            </div>
           )}
         </Await>
       </Suspense>
@@ -451,6 +462,7 @@ function ProductDetail({
                 {title}
               </Text>
               <IconClose
+                stroke="white"
                 className={clsx(
                   'transition-transform transform-gpu duration-200',
                   !open && 'rotate-[45deg]',
@@ -515,7 +527,7 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
       handle
     }
   }
-`;
+` as const;
 
 const PRODUCT_QUERY = `#graphql
   query Product(

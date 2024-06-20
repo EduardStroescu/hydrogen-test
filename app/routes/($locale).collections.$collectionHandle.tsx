@@ -1,11 +1,9 @@
-import {useEffect} from 'react';
 import {
   json,
   type MetaArgs,
   type LoaderFunctionArgs,
 } from '@shopify/remix-oxygen';
-import {useLoaderData, useNavigate} from '@remix-run/react';
-import {useInView} from 'react-intersection-observer';
+import {useLoaderData} from '@remix-run/react';
 import type {
   Filter,
   ProductCollectionSortKeys,
@@ -21,22 +19,20 @@ import {
 import invariant from 'tiny-invariant';
 
 import {PageHeader, Section, Text} from '~/components/Text';
-import {Grid} from '~/components/Grid';
 import {Button} from '~/components/Button';
-import {ProductCard} from '~/components/ProductCard';
 import {SortFilter, type SortParam} from '~/components/SortFilter';
 import {PRODUCT_CARD_FRAGMENT} from '~/data/fragments';
 import {routeHeaders} from '~/data/cache';
 import {seoPayload} from '~/lib/seo.server';
 import {FILTER_URL_PREFIX} from '~/components/SortFilter';
-import {getImageLoadingPriority} from '~/lib/const';
 import {parseAsCurrency} from '~/lib/utils';
+import {IconArrowLeft, IconArrowRight, ScrollIcon} from '~/components/Icon';
 
 export const headers = routeHeaders;
 
 export async function loader({params, request, context}: LoaderFunctionArgs) {
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 6,
   });
   const {collectionHandle} = params;
   const locale = context.storefront.i18n;
@@ -144,8 +140,9 @@ export const meta = ({matches}: MetaArgs<typeof loader>) => {
 export default function Collection() {
   const {collection, collections, appliedFilters} =
     useLoaderData<typeof loader>();
-
-  const {ref, inView} = useInView();
+  const currencyCode = collection?.products.nodes[0]
+    ? collection?.products.nodes[0].variants.nodes[0].price.currencyCode
+    : 'RON';
 
   return (
     <>
@@ -165,44 +162,60 @@ export default function Collection() {
           filters={collection.products.filters as Filter[]}
           appliedFilters={appliedFilters}
           collections={collections}
-        >
-          <Pagination connection={collection.products}>
-            {({
-              nodes,
-              isLoading,
-              PreviousLink,
-              NextLink,
-              nextPageUrl,
-              hasNextPage,
-              state,
-            }) => (
+          currencyCode={currencyCode}
+        />
+        <Pagination connection={collection.products}>
+          {({
+            isLoading,
+            hasPreviousPage,
+            nextPageUrl,
+            previousPageUrl,
+            hasNextPage,
+          }) => {
+            return (
               <>
-                <div className="flex items-center justify-center mb-6">
-                  <Button as={PreviousLink} variant="secondary" width="full">
-                    {isLoading ? 'Loading...' : 'Load previous'}
-                  </Button>
-                </div>
-                <ProductsLoadedOnScroll
-                  nodes={nodes}
-                  inView={inView}
-                  nextPageUrl={nextPageUrl}
-                  hasNextPage={hasNextPage}
-                  state={state}
-                />
-                <div className="flex items-center justify-center mt-6">
-                  <Button
-                    ref={ref}
-                    as={NextLink}
-                    variant="secondary"
-                    width="full"
-                  >
-                    {isLoading ? 'Loading...' : 'Load more products'}
-                  </Button>
-                </div>
+                {!isLoading && (
+                  <div className="fixed z-[-1] flex justify-center items-center gap-4 lg:gap-10 w-full mb-6 bottom-[5%] left-0">
+                    <Button
+                      to={previousPageUrl.replace(/(%3D)+/g, '==')}
+                      width={'auto'}
+                      variant="overlay"
+                      onClick={(e) =>
+                        !hasPreviousPage ? e.preventDefault() : null
+                      }
+                    >
+                      <div className="w-full aspect-[2/1] flex flex-row justify-center items-center gap-2">
+                        <IconArrowLeft width={'w-[2rem]'} />
+                        <span className="group-hover:text-white/100 text-sm">
+                          Prev
+                        </span>
+                      </div>
+                    </Button>
+                    <div className="flex flex-col items-center justify-center">
+                      <ScrollIcon />
+                      <p className="text-center text-base">Scroll</p>
+                    </div>
+                    <Button
+                      to={nextPageUrl.replace(/(%3D)+/g, '==')}
+                      width={'auto'}
+                      variant="overlay"
+                      onClick={(e) =>
+                        !hasNextPage ? e.preventDefault() : null
+                      }
+                    >
+                      <div className="w-full aspect-[2/1] flex flex-row justify-center items-center gap-2">
+                        <span className="group-hover:text-white/100 text-sm">
+                          Next
+                        </span>
+                        <IconArrowRight width={'w-[2rem]'} />
+                      </div>
+                    </Button>
+                  </div>
+                )}
               </>
-            )}
-          </Pagination>
-        </SortFilter>
+            );
+          }}
+        </Pagination>
       </Section>
       <Analytics.CollectionView
         data={{
@@ -213,44 +226,6 @@ export default function Collection() {
         }}
       />
     </>
-  );
-}
-
-function ProductsLoadedOnScroll({
-  nodes,
-  inView,
-  nextPageUrl,
-  hasNextPage,
-  state,
-}: {
-  nodes: any;
-  inView: boolean;
-  nextPageUrl: string;
-  hasNextPage: boolean;
-  state: any;
-}) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      navigate(nextPageUrl, {
-        replace: true,
-        preventScrollReset: true,
-        state,
-      });
-    }
-  }, [inView, navigate, state, nextPageUrl, hasNextPage]);
-
-  return (
-    <Grid layout="products" data-test="product-grid">
-      {nodes.map((product: any, i: number) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-          loading={getImageLoadingPriority(i)}
-        />
-      ))}
-    </Grid>
   );
 }
 
@@ -309,8 +284,8 @@ const COLLECTION_QUERY = `#graphql
         pageInfo {
           hasPreviousPage
           hasNextPage
-          endCursor
           startCursor
+          endCursor
         }
       }
     }

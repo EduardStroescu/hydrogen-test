@@ -1,11 +1,13 @@
-import {useState, useEffect, type RefObject} from 'react';
+import {useState, useEffect, type RefObject, MutableRefObject} from 'react';
 
 interface Widths {
   offsetWidth: number;
   scrollWidth: number;
 }
 
-export const useContainerWidth = (containerRef: RefObject<HTMLElement>) => {
+export const useContainerWidth = (
+  containerRef: MutableRefObject<HTMLDivElement | null>,
+) => {
   const [widths, setWidths] = useState<Widths>({
     offsetWidth: 0,
     scrollWidth: 0,

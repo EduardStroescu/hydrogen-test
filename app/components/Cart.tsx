@@ -55,7 +55,8 @@ export function CartDetails({
   // @todo: get optimistic cart cost
   const cartHasItems = !!cart && cart.totalQuantity > 0;
   const container = {
-    drawer: 'grid grid-cols-1 h-screen-no-nav grid-rows-[1fr_auto]',
+    drawer:
+      'bg-contrast/60 grid grid-cols-1 h-screen-no-nav pt-4 grid-rows-[1fr_auto]',
     page: 'w-full pb-12 grid md:grid-cols-2 md:items-start gap-8 md:gap-8 lg:gap-12',
   };
 
@@ -164,7 +165,7 @@ function CartLines({
   const className = clsx([
     y > 0 ? 'border-t' : '',
     layout === 'page'
-      ? 'flex-grow md:translate-y-4'
+      ? 'flex-grow md:translate-y-4 backdrop-blur-xl px-10 py-6 rounded'
       : 'px-6 pb-6 sm-max:pt-2 overflow-auto transition md:px-12',
   ]);
 
@@ -193,7 +194,6 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl: string}) {
           Continue to Checkout
         </Button>
       </a>
-      {/* @todo: <CartShopPayButton cart={cart} /> */}
     </div>
   );
 }
@@ -208,8 +208,8 @@ function CartSummary({
   layout: Layouts;
 }) {
   const summary = {
-    drawer: 'grid gap-4 p-6 border-t md:px-12',
-    page: 'sticky top-nav grid gap-6 p-4 md:px-6 md:translate-y-4 bg-primary/5 rounded w-full',
+    drawer: 'grid gap-4 p-6 border-t md:px-12 bg-contrast/60',
+    page: 'sticky top-nav grid gap-6 p-4 md:px-6 md:translate-y-4 bg-primary/5 rounded w-full backdrop-blur-lg',
   };
 
   return (
@@ -264,7 +264,7 @@ function CartLineItem({line}: {line: CartLine}) {
             width={110}
             height={110}
             data={merchandise.image}
-            className="object-cover object-center w-24 h-24 border rounded md:w-28 md:h-28"
+            className="object-cover object-center w-24 h-24 border border-black rounded md:w-28 md:h-28"
             alt={merchandise.title}
           />
         )}
@@ -343,12 +343,12 @@ function CartLineQuantityAdjust({line}: {line: CartLine}) {
       <label htmlFor={`quantity-${lineId}`} className="sr-only">
         Quantity, {optimisticQuantity}
       </label>
-      <div className="flex items-center border rounded">
+      <div className="flex items-center border rounded ">
         <UpdateCartButton lines={[{id: lineId, quantity: prevQuantity}]}>
           <button
             name="decrease-quantity"
             aria-label="Decrease quantity"
-            className="w-10 h-10 transition text-primary/50 hover:text-primary disabled:text-primary/10"
+            className="w-10 h-10 transition text-white/80 hover:text-white  disabled:text-white/40"
             value={prevQuantity}
             disabled={optimisticQuantity <= 1}
           >
@@ -366,7 +366,7 @@ function CartLineQuantityAdjust({line}: {line: CartLine}) {
 
         <UpdateCartButton lines={[{id: lineId, quantity: nextQuantity}]}>
           <button
-            className="w-10 h-10 transition text-primary/50 hover:text-primary"
+            className="w-10 h-10 transition text-white/80 hover:text-white"
             name="increase-quantity"
             value={nextQuantity}
             aria-label="Increase quantity"
@@ -440,7 +440,7 @@ export function CartEmpty({
 
   const container = {
     drawer: clsx([
-      'content-start gap-4 px-6 pb-8 transition overflow-y-scroll md:gap-12 md:px-12 h-screen-no-nav md:pb-12',
+      'bg-contrast/60 content-start text-center gap-4 px-6 pb-8 pt-8 transition overflow-y-scroll md:gap-12 md:px-12 h-screen-no-nav md:pb-12 md:pt-12',
       y > 0 ? 'border-t' : '',
     ]),
     page: clsx([
@@ -452,12 +452,16 @@ export function CartEmpty({
   return (
     <div ref={scrollRef} className={container[layout]} hidden={hidden}>
       <section className="grid gap-6">
-        <Text format>
-          Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
-          started!
-        </Text>
+        <h2 className="whitespace-pre-wrap max-w-prose font-bold text-4xl text-white">
+          Your cart is empty
+        </h2>
         <div>
-          <Button onClick={onClose}>Continue shopping</Button>
+          <Button
+            onClick={onClose}
+            className="inline-block rounded-sm font-medium text-center py-3 px-6 max-w-xl leading-none bg-black text-white w-full"
+          >
+            Continue shopping
+          </Button>
         </div>
       </section>
       <section className="grid gap-8 pt-16">

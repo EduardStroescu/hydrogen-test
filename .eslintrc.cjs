@@ -6,8 +6,10 @@ module.exports = {
     '@remix-run/eslint-config',
     'plugin:hydrogen/recommended',
     'plugin:hydrogen/typescript',
+    'plugin:@react-three',
   ],
   rules: {
+    '@react-three/no-clone-in-frame-loop': 'error',
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/naming-convention': 'off',
     'hydrogen/prefer-image-component': 'off',

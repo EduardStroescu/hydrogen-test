@@ -27,21 +27,26 @@ export type SortParam =
   | 'price-high-low'
   | 'best-selling'
   | 'newest'
-  | 'featured';
+  | 'featured'
+  | 'product-type';
 
 type Props = {
-  filters: Filter[];
+  filters?: Filter[];
   appliedFilters?: AppliedFilter[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
   collections?: Array<{handle: string; title: string}>;
+  currencyCode?: string;
+  page?: string;
 };
 export const FILTER_URL_PREFIX = 'filter.';
 
 export function SortFilter({
-  filters,
+  filters = [],
   appliedFilters = [],
   children,
   collections = [],
+  currencyCode,
+  page,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -50,25 +55,34 @@ export function SortFilter({
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={
-            'relative flex items-center justify-center w-8 h-8 focus:ring-primary/5'
+            filters.length > 0
+              ? 'pointer-events-auto relative flex items-center justify-center w-8 h-8 focus:ring-primary/5'
+              : 'pointer-events-none opacity-0'
           }
         >
           <IconFilters />
         </button>
-        <SortMenu />
+        <SortMenu page={page} />
       </div>
-      <div className="flex flex-col flex-wrap md:flex-row">
-        <div
-          className={`transition-all duration-200 ${
-            isOpen
-              ? 'opacity-100 min-w-full md:min-w-[240px] md:w-[240px] md:pr-8 max-h-full'
-              : 'opacity-0 md:min-w-[0px] md:w-[0px] pr-0 max-h-0 md:max-h-full'
-          }`}
-        >
-          <FiltersDrawer filters={filters} appliedFilters={appliedFilters} />
+      {filters.length > 0 ? (
+        <div className="flex flex-col flex-wrap md:flex-row pointer-events-none">
+          <div
+            className={`transition-all duration-200 ${
+              isOpen
+                ? 'opacity-100 min-w-full md:min-w-[240px] md:w-[240px] md:pr-8 max-h-full pointer-events-auto'
+                : 'hidden opacity-0 md:min-w-[0px] md:w-[0px] pr-0 max-h-0 md:max-h-full'
+            }`}
+          >
+            <FiltersDrawer
+              collections={collections}
+              filters={filters}
+              appliedFilters={appliedFilters}
+              currencyCode={currencyCode}
+            />
+          </div>
+          <div className="flex-1">{children}</div>
         </div>
-        <div className="flex-1">{children}</div>
-      </div>
+      ) : null}
     </>
   );
 }
@@ -76,7 +90,8 @@ export function SortFilter({
 export function FiltersDrawer({
   filters = [],
   appliedFilters = [],
-}: Omit<Props, 'children'>) {
+  currencyCode,
+}: Omit<Props, 'children' | 'page'>) {
   const [params] = useSearchParams();
   const location = useLocation();
 
@@ -90,7 +105,9 @@ export function FiltersDrawer({
         const min = isNaN(Number(price?.min)) ? undefined : Number(price?.min);
         const max = isNaN(Number(price?.max)) ? undefined : Number(price?.max);
 
-        return <PriceRangeFilter min={min} max={max} />;
+        return (
+          <PriceRangeFilter min={min} max={max} currencyCode={currencyCode} />
+        );
 
       default:
         const to = getFilterLink(option.input as string, params, location);
@@ -210,7 +227,15 @@ function getFilterLink(
 
 const PRICE_RANGE_FILTER_DEBOUNCE = 500;
 
-function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
+function PriceRangeFilter({
+  max,
+  min,
+  currencyCode,
+}: {
+  max?: number;
+  min?: number;
+  currencyCode: string | undefined;
+}) {
   const location = useLocation();
   const params = useMemo(
     () => new URLSearchParams(location.search),
@@ -257,26 +282,27 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
   };
 
   return (
+    //TODO - STYLE FILTER INPUTS
     <div className="flex flex-col">
       <label className="mb-4">
-        <span>from</span>
+        <span className="px-4 md:px-0">Min</span>
         <input
           name="minPrice"
-          className="text-black"
+          className="text-primary rounded bg-blur-lg bg-black/60"
           type="number"
           value={minPrice ?? ''}
-          placeholder={'$'}
+          placeholder={`${currencyCode ? currencyCode : 'RON'}`}
           onChange={onChangeMin}
         />
       </label>
       <label>
-        <span>to</span>
+        <span>Max</span>
         <input
           name="maxPrice"
-          className="text-black"
+          className="text-primary rounded bg-blur-lg bg-black/60"
           type="number"
           value={maxPrice ?? ''}
-          placeholder={'$'}
+          placeholder={`${currencyCode ? currencyCode : 'RON'}`}
           onChange={onChangeMax}
         />
       </label>
@@ -308,32 +334,54 @@ function filterInputToParams(
   return params;
 }
 
-export default function SortMenu() {
-  const items: {label: string; key: SortParam}[] = [
-    {label: 'Featured', key: 'featured'},
-    {
-      label: 'Price: Low - High',
-      key: 'price-low-high',
-    },
-    {
-      label: 'Price: High - Low',
-      key: 'price-high-low',
-    },
-    {
-      label: 'Best Selling',
-      key: 'best-selling',
-    },
-    {
-      label: 'Newest',
-      key: 'newest',
-    },
-  ];
+export default function SortMenu({page = 'default'}: {page: string}) {
+  function pageType(page: string): {label: string; key: SortParam}[] {
+    if (page === 'default') {
+      return [
+        {label: 'Featured', key: 'featured'},
+        {label: 'Product Type', key: 'product-type'},
+        {
+          label: 'Price: Low - High',
+          key: 'price-low-high',
+        },
+        {
+          label: 'Price: High - Low',
+          key: 'price-high-low',
+        },
+        {
+          label: 'Best Selling',
+          key: 'best-selling',
+        },
+        {
+          label: 'Newest',
+          key: 'newest',
+        },
+      ];
+    } else {
+      return [
+        {label: 'Product Type', key: 'product-type'},
+        {
+          label: 'Price: Low - High',
+          key: 'price-low-high',
+        },
+        {
+          label: 'Price: High - Low',
+          key: 'price-high-low',
+        },
+        {
+          label: 'Best Selling',
+          key: 'best-selling',
+        },
+      ];
+    }
+  }
+  const items = pageType(page);
   const [params] = useSearchParams();
   const location = useLocation();
   const activeItem = items.find((item) => item.key === params.get('sort'));
 
   return (
-    <Menu as="div" className="relative z-40">
+    <Menu as="div" className="relative z-40 pointer-events-auto">
       <Menu.Button className="flex items-center">
         <span className="px-2">
           <span className="px-2 font-medium">Sort by:</span>
@@ -350,8 +398,10 @@ export default function SortMenu() {
           <Menu.Item key={item.label}>
             {() => (
               <Link
-                className={`block text-sm pb-2 px-3 ${
-                  activeItem?.key === item.key ? 'font-bold' : 'font-normal'
+                className={`block text-sm text-white/60 hover:text-white pb-2 px-3 ${
+                  activeItem?.key === item.key
+                    ? 'font-bold text-white/100'
+                    : 'font-normal'
                 }`}
                 to={getSortLink(item.key, params, location)}
               >

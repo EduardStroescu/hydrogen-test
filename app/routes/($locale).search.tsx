@@ -12,7 +12,7 @@ import {
   getSeoMeta,
 } from '@shopify/hydrogen';
 
-import {Heading, PageHeader, Section, Text} from '~/components/Text';
+import {PageHeader, Section, Text} from '~/components/Text';
 import {Input} from '~/components/Input';
 import {Grid} from '~/components/Grid';
 import {ProductCard} from '~/components/ProductCard';
@@ -86,10 +86,10 @@ export default function Search() {
   return (
     <>
       <PageHeader>
-        <Heading as="h1" size="copy">
-          Search
-        </Heading>
-        <Form method="get" className="relative flex w-full text-heading">
+        <Form
+          method="get"
+          className="relative flex w-full text-heading pointer-events-auto"
+        >
           <Input
             defaultValue={searchTerm}
             name="q"
@@ -108,7 +108,7 @@ export default function Search() {
           recommendations={noResultRecommendations}
         />
       ) : (
-        <Section>
+        <Section className="pointer-events-auto">
           <Pagination connection={products}>
             {({nodes, isLoading, NextLink, PreviousLink}) => {
               const itemsMarkup = nodes.map((product, i) => (
@@ -169,7 +169,7 @@ function NoResults({
             const {featuredCollections, featuredProducts} = result;
 
             return (
-              <>
+              <Section className="relative pointer-events-auto">
                 <FeaturedCollections
                   title="Trending Collections"
                   collections={featuredCollections}
@@ -177,8 +177,15 @@ function NoResults({
                 <ProductSwimlane
                   title="Trending Products"
                   products={featuredProducts}
+                  buttonLeftStyle={
+                    'w-[2rem] md:w-[3rem] -translate-x-4 translate-x-[0.3rem] lg:translate-x-4'
+                  }
+                  buttonRightStyle={
+                    'w-[2rem] md:w-[3rem] translate-x-4 -translate-x-[0.3rem] lg:-translate-x-4'
+                  }
+                  className={'lg:-left-[0px] -translate-y-8'}
                 />
-              </>
+              </Section>
             );
           }}
         </Await>

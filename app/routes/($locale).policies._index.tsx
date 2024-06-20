@@ -48,7 +48,7 @@ export default function Policies() {
   return (
     <>
       <PageHeader heading="Policies" />
-      <Section padding="x" className="mb-24">
+      <Section padding="x" className="pt-20 mb-24 pointer-events-auto">
         {policies.map((policy) => {
           return (
             policy && (
@@ -91,4 +91,4 @@ const POLICIES_QUERY = `#graphql
       }
     }
   }
-`;
+` as const;

@@ -1,16 +1,6 @@
 import clsx from 'clsx';
 
-type IconProps = JSX.IntrinsicElements['svg'] & {
-  direction?: 'up' | 'right' | 'down' | 'left';
-};
-
-function Icon({
-  children,
-  className,
-  fill = 'currentColor',
-  stroke,
-  ...props
-}: IconProps) {
+function Icon({children, className, fill = 'currentColor', stroke, ...props}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +15,7 @@ function Icon({
   );
 }
 
-export function IconMenu(props: IconProps) {
+export function IconMenu(props) {
   return (
     <Icon {...props} stroke={props.stroke || 'currentColor'}>
       <title>Menu</title>
@@ -36,9 +26,9 @@ export function IconMenu(props: IconProps) {
   );
 }
 
-export function IconClose(props: IconProps) {
+export function IconClose(props) {
   return (
-    <Icon {...props} stroke={props.stroke || 'currentColor'}>
+    <Icon {...props} stroke={props.stroke || 'black'}>
       <title>Close</title>
       <line
         x1="4.44194"
@@ -58,7 +48,7 @@ export function IconClose(props: IconProps) {
   );
 }
 
-export function IconArrow({direction = 'right'}: IconProps) {
+export function IconArrow({direction = 'right'}) {
   let rotate;
 
   switch (direction) {
@@ -90,7 +80,7 @@ export function IconCaret({
   direction = 'down',
   stroke = 'currentColor',
   ...props
-}: IconProps) {
+}) {
   let rotate;
 
   switch (direction) {
@@ -123,7 +113,7 @@ export function IconCaret({
   );
 }
 
-export function IconSelect(props: IconProps) {
+export function IconSelect(props) {
   return (
     <Icon {...props}>
       <title>Select</title>
@@ -133,7 +123,7 @@ export function IconSelect(props: IconProps) {
   );
 }
 
-export function IconBag(props: IconProps) {
+export function IconBag(props) {
   return (
     <Icon {...props}>
       <title>Bag</title>
@@ -145,7 +135,7 @@ export function IconBag(props: IconProps) {
   );
 }
 
-export function IconLogin(props: IconProps) {
+export function IconLogin(props) {
   return (
     <Icon {...props}>
       <title>Login</title>
@@ -164,7 +154,7 @@ export function IconLogin(props: IconProps) {
   );
 }
 
-export function IconAccount(props: IconProps) {
+export function IconAccount(props) {
   return (
     <Icon {...props}>
       <title>Account</title>
@@ -176,7 +166,7 @@ export function IconAccount(props: IconProps) {
   );
 }
 
-export function IconHelp(props: IconProps) {
+export function IconHelp(props) {
   return (
     <Icon {...props}>
       <title>Help</title>
@@ -185,7 +175,7 @@ export function IconHelp(props: IconProps) {
   );
 }
 
-export function IconSearch(props: IconProps) {
+export function IconSearch(props) {
   return (
     <Icon {...props}>
       <title>Search</title>
@@ -197,10 +187,7 @@ export function IconSearch(props: IconProps) {
   );
 }
 
-export function IconCheck({
-  stroke = 'currentColor',
-  ...props
-}: React.ComponentProps<typeof Icon>) {
+export function IconCheck({stroke = 'currentColor', ...props}) {
   return (
     <Icon {...props} fill="transparent" stroke={stroke}>
       <title>Check</title>
@@ -215,10 +202,7 @@ export function IconCheck({
   );
 }
 
-export function IconXMark({
-  stroke = 'currentColor',
-  ...props
-}: React.ComponentProps<typeof Icon>) {
+export function IconXMark({stroke = 'currentColor', ...props}) {
   return (
     <Icon {...props} fill="transparent" stroke={stroke}>
       <title>Delete</title>
@@ -231,9 +215,9 @@ export function IconXMark({
   );
 }
 
-export function IconRemove(props: IconProps) {
+export function IconRemove(props) {
   return (
-    <Icon {...props} fill="transparent" stroke={props.stroke || 'currentColor'}>
+    <Icon {...props} fill="transparent" stroke={props.stroke || 'black'}>
       <title>Remove</title>
       <path
         d="M4 6H16"
@@ -257,7 +241,7 @@ export function IconRemove(props: IconProps) {
   );
 }
 
-export function IconFilters(props: IconProps) {
+export function IconFilters(props) {
   return (
     <Icon {...props} fill="transparent" stroke={props.stroke || 'currentColor'}>
       <title>Filters</title>
@@ -268,5 +252,157 @@ export function IconFilters(props: IconProps) {
       <line x1="11" y1="13.5" x2="14" y2="13.5" />
       <circle cx="9.5" cy="13.5" r="2" />
     </Icon>
+  );
+}
+
+export function IconArrowLeft({width}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${width} pointer-events-auto cursor-pointer opacity-60 group-hover:opacity-100`}
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <path
+          d="M13 8L9 12M9 12L13 16M9 12H21M19.4845 7C17.8699 4.58803 15.1204 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C15.1204 21 17.8699 19.412 19.4845 17"
+          stroke="#ffffff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>{' '}
+      </g>
+    </svg>
+  );
+}
+
+export function IconArrowRight({width}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`${width} pointer-events-auto cursor-pointer opacity-60 group-hover:opacity-100`}
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <path
+          d="M11 16L15 12M15 12L11 8M15 12H3M4.51555 17C6.13007 19.412 8.87958 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C8.87958 3 6.13007 4.58803 4.51555 7"
+          stroke="#ffffff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>{' '}
+      </g>
+    </svg>
+  );
+}
+
+export function ScrollIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      width={100}
+      className="w-[2rem]"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        <path
+          d="M5 15C5 16.8565 5.73754 18.6371 7.05029 19.9498C8.36305 21.2626 10.1435 21.9999 12 21.9999C13.8565 21.9999 15.637 21.2626 16.9498 19.9498C18.2625 18.6371 19 16.8565 19 15V9C19 7.14348 18.2625 5.36305 16.9498 4.05029C15.637 2.73754 13.8565 2 12 2C10.1435 2 8.36305 2.73754 7.05029 4.05029C5.73754 5.36305 5 7.14348 5 9V15Z"
+          stroke="#ffffff"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+        <g className="bounce">
+          <path
+            d="M12 6V14"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></path>
+          <path
+            d="M15 11L12 14L9 11"
+            stroke="#ffffff"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          ></path>
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+export function SuccessIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      width="25.903"
+      height="22.395"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        <path
+          fill="#f597e8"
+          fillRule="evenodd"
+          d="M3 10a7 7 0 019.307-6.611 1 1 0 00.658-1.889 9 9 0 105.98 7.501 1 1 0 00-1.988.22A7 7 0 113 10zm14.75-5.338a1 1 0 00-1.5-1.324l-6.435 7.28-3.183-2.593a1 1 0 00-1.264 1.55l3.929 3.2a1 1 0 001.38-.113l7.072-8z"
+        ></path>
+      </g>
+    </svg>
+  );
+}
+
+export function FailIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      width="25.903"
+      height="22.395"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        <path
+          fill="#F87171"
+          fillRule="evenodd"
+          d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm12.844-3.707a1 1 0 010 1.414l-2.361 2.362 2.361 2.36a1 1 0 01-1.414 1.415l-2.361-2.361-2.362 2.361a1 1 0 11-1.414-1.414l2.361-2.361-2.361-2.362a1 1 0 011.414-1.414l2.362 2.361 2.36-2.361a1 1 0 011.415 0z"
+        ></path>
+      </g>
+    </svg>
   );
 }

@@ -11,11 +11,23 @@ export default async function handleRequest(
   remixContext: EntryContext,
   context: AppLoadContext,
 ) {
+  const commonDirectives = [
+    "'self'",
+    'https://cdn.shopify.com',
+    'https://www.gstatic.com',
+    'https://cdn.jsdelivr.net',
+  ];
   const {nonce, header, NonceProvider} = createContentSecurityPolicy({
     shop: {
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    defaultSrc: ['blob:', "'unsafe-eval'", ...commonDirectives],
+    scriptSrc: ["'unsafe-eval'", 'blob:', ...commonDirectives],
+    workerSrc: ['blob:'],
+    imgSrc: ['data:', ...commonDirectives],
+    styleSrc: ["'unsafe-inline'", ...commonDirectives],
+    connectSrc: [...commonDirectives],
   });
 
   const body = await renderToReadableStream(

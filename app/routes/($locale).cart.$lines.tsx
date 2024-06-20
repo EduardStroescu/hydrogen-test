@@ -39,7 +39,7 @@ export async function loader({request, context, params}: LoaderFunctionArgs) {
   const discount = searchParams.get('discount');
   const discountArray = discount ? [discount] : [];
 
-  //! create a cart
+  // create a cart
   const result = await cart.create({
     lines: linesMap,
     discountCodes: discountArray,
@@ -56,7 +56,7 @@ export async function loader({request, context, params}: LoaderFunctionArgs) {
   // Update cart id in cookie
   const headers = cart.setCartId(cartResult.id);
 
-  //! redirect to checkout
+  //! Redirect to checkout
   if (cartResult.checkoutUrl) {
     return redirect(cartResult.checkoutUrl, {headers});
   } else {

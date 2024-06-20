@@ -1,6 +1,6 @@
 import {json} from '@shopify/remix-oxygen';
 
-import {CACHE_LONG} from '~/data/cache';
+import {CACHE_SHORT} from '~/data/cache';
 import {countries} from '~/data/countries';
 
 export async function loader() {
@@ -10,7 +10,7 @@ export async function loader() {
     },
     {
       headers: {
-        'cache-control': CACHE_LONG,
+        'cache-control': CACHE_SHORT,
       },
     },
   );
