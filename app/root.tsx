@@ -37,6 +37,10 @@ import favicon from '/favicon.png';
 
 export type RootLoader = typeof loader;
 
+export const config = {
+  memory: 1024,
+};
+
 // This is important to avoid re-fetching root queries on sub-navigations
 export const shouldRevalidate: ShouldRevalidateFunction = ({
   formMethod,
